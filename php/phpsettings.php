@@ -370,7 +370,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_reply_email'])) 
     header('Content-Type: application/json');
     
     try {
-        $phpmailerPath = 'Mail/PHPMailer/PHPMailerAutoload.php';
+        $phpmailerPath = 'Mail/PHPMailerAutoload.php';
         if (!file_exists($phpmailerPath)) {
             throw new Exception('PHPMailer library not found');
         }
