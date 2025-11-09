@@ -54,7 +54,7 @@ $originalJobInfo = [];
 $getOriginalQuery = "SELECT postjobrole, posttype, postexperience, postsalary, postaddress, 
                             postsummary, postresponsibilities, postspecification, postworksetup, 
                             postapplicantlimit, postdeadline 
-                       FROM Jobposting WHERE postid = ?";
+                       FROM jobposting WHERE postid = ?";
 $stmtGetOriginal = $con->prepare($getOriginalQuery);
 
 if ($stmtGetOriginal) {
@@ -72,7 +72,7 @@ if ($stmtGetOriginal) {
 try {
 
     $stmt = $con->prepare("
-        UPDATE Jobposting 
+        UPDATE jobposting 
         SET 
             postjobrole = ?, 
             posttype = ?, 

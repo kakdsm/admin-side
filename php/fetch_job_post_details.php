@@ -27,7 +27,7 @@ $stmt = $con->prepare("
         poststatus,
         postdeadline as postdeadline_raw
     FROM 
-        Jobposting 
+        jobposting 
     WHERE 
         postid = ?
 ");

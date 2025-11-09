@@ -82,7 +82,7 @@ if ($postsalary < 0) {
     sendResponse(false, 'Salary must be a non-negative value.');
 }
 
-$sql = "INSERT INTO Jobposting (
+$sql = "INSERT INTO jobposting (
     postjobrole, 
     postsummary, 
     postresponsibilities, 

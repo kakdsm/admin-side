@@ -224,7 +224,7 @@ if (isset($_SESSION['message'])) {
                       jp.poststatus,
                       COUNT(a.postid) as applicant_count
                   FROM 
-                      jobposting1 jp
+                      jobposting jp
                   LEFT JOIN 
                       application a ON jp.postid = a.postid
                   GROUP BY

@@ -38,7 +38,7 @@ try {
     // --- END Admin Info ---
     
     $jobRole = 'N/A';
-    $getJobRoleQuery = "SELECT postjobrole FROM Jobposting WHERE postid = ?";
+    $getJobRoleQuery = "SELECT postjobrole FROM jobposting WHERE postid = ?";
     $stmtJobRole = $con->prepare($getJobRoleQuery);
     if ($stmtJobRole) {
         $stmtJobRole->bind_param("i", $postid);
@@ -49,7 +49,7 @@ try {
         }
         $stmtJobRole->close();
     }
-    $stmt = $con->prepare("DELETE FROM Jobposting WHERE postid = ?");
+    $stmt = $con->prepare("DELETE FROM jobposting WHERE postid = ?");
     $stmt->bind_param("i", $postid);
 
     if ($stmt->execute()) {
