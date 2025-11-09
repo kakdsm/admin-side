@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'session_init.php';
 if (!isset($_SESSION['admin'])) {
     header("HTTP/1.1 401 Unauthorized");
     exit();

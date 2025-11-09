@@ -18,7 +18,7 @@
 </head>
 <body>
 <?php
-session_start();
+require_once 'session_init.php';
 include 'database.php';
 if (!isset($_SESSION['admin'])) {
   header("Location: admin_login.php");
@@ -221,7 +221,7 @@ if (isset($_SESSION['message'])) {
                       jp.poststatus,
                       COUNT(a.postid) as applicant_count
                   FROM 
-                      Jobposting jp
+                      jobposting jp
                   LEFT JOIN 
                       application a ON jp.postid = a.postid
                   GROUP BY

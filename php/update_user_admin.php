@@ -1,8 +1,8 @@
 <?php
 include 'database.php';
-session_start();
+require_once 'session_init.php';
 
-require 'Mail/phpmailer/PHPMailerAutoload.php'; 
+require './Mail/phpmailer/PHPMailerAutoload.php'; 
 
 if (!isset($_SESSION['admin'])) {
     $_SESSION['message'] = 'Unauthorized access.';

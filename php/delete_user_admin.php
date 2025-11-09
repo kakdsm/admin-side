@@ -1,6 +1,6 @@
 <?php
 include 'database.php';
-session_start();
+require_once 'session_init.php';
 
 require 'Mail/phpmailer/PHPMailerAutoload.php'; 
 

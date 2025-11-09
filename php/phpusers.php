@@ -2,7 +2,7 @@
 <?php
 include 'database.php';
 
-session_start();
+require_once 'session_init.php';
 
 if (!isset($_SESSION['admin'])) {
     header("Location: admin_login.php");
