@@ -18,7 +18,7 @@
 
 <body>
 <?php
-session_start();
+require_once 'session_init.php';
 include 'database.php';
 if (!isset($_SESSION['admin'])) {
   header("Location: admin_login.php");
