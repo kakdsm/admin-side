@@ -1,7 +1,7 @@
 <?php
 require_once './php/session_init.php';
 include './php/database.php';
-require 'Mail/phpmailer/PHPMailerAutoload.php'; 
+require './php/Mail/phpmailer/PHPMailerAutoload.php'; 
 
 $error = ""; 
 $response = ['success' => false, 'message' => ''];
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $audit->execute();
         $audit->close();
 
-        header("Location: dashboard.php");
+        header("Location: ./php/dashboard.php");
         exit();
       } 
       else {
@@ -371,7 +371,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //  Get the parent container
         const errorContainer = button.closest('.error-message');
 
-        fetch('admin_login.php', {
+        fetch('./index.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -510,7 +510,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       sendOtpBtn.disabled = true;
       sendOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
-      fetch('admin_login.php', {
+      fetch('./index.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -554,7 +554,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         return;
       }
 
-      fetch('admin_login.php', {
+      fetch('./index.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -564,7 +564,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          window.location.href = 'admin_forgot_pass.php';
+          window.location.href = './php/admin_forgot_pass.php';
         } else {
           otpErrorMessage.textContent = data.message || "Invalid OTP. Please try again.";
           otpErrorMessage.style.color = '#ef4444';
@@ -593,7 +593,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       otpErrorMessage.textContent = '';
       otpErrorMessage.style.color = '';
 
-      fetch('admin_login.php', {
+      fetch('./index.php', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
