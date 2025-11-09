@@ -1,25 +1,35 @@
 <?php
 
-$DB_SERVER = "localhost"; 
-$DB_USER = "root"; 
-$DB_PASS = ""; 
-$DB_NAME = "jobfit1"; 
 
-try
-{
-$dbh = new PDO("mysql:host=".$DB_SERVER.";dbname=".$DB_NAME, $DB_USER, $DB_PASS,array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"));
+// Get database credentials from environment variables
+$DB_SERVER = getenv("MYSQLHOST");
+$DB_USER   = getenv("MYSQLUSER");
+$DB_PASS   = getenv("MYSQLPASSWORD");
+$DB_NAME   = getenv("MYSQL_DATABASE");
+$DB_PORT   = getenv("MYSQLPORT") ?: 3306; // default port 3306 if not set
+
+// ------------------- PDO Connection -------------------
+try {
+    $dbh = new PDO(
+        "mysql:host={$DB_SERVER};port={$DB_PORT};dbname={$DB_NAME};charset=utf8mb4",
+        $DB_USER,
+        $DB_PASS,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8mb4'"
+        ]
+    );
+
+} catch (PDOException $e) {
+    exit("❌ PDO Connection Error: " . $e->getMessage());
 }
-catch (PDOException $e)
-{
-exit("Error: " . $e->getMessage());
+
+// ------------------- MySQLi Connection -------------------
+$con = mysqli_connect($DB_SERVER, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
+
+if (!$con) {
+    exit("❌ MySQLi Connection Error: " . mysqli_connect_error());
+} else {
+    
 }
-
-
-$con = mysqli_connect($DB_SERVER, $DB_USER, $DB_PASS, $DB_NAME);
-
-if (mysqli_connect_error())
-{
-	echo "Failed to connect to MySQL: " . mysqli_connect_error();
-}
-
 ?>
