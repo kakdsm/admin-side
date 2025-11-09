@@ -399,7 +399,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_reply_email'])) 
         $mail->SMTPSecure = 'tls';
         $mail->Username = 'jftsystem@gmail.com';
         $mail->Password = 'vwhs rehv nang bxuu';
-        
+        $mail->SMTPDebug = 2; // shows detailed connection logs
+$mail->Debugoutput = 'html'
        
         $mail->SMTPOptions = array(
             'ssl' => array(
