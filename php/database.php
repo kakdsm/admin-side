@@ -5,7 +5,7 @@
 $DB_SERVER = getenv("MYSQLHOST");
 $DB_USER   = getenv("MYSQLUSER");
 $DB_PASS   = getenv("MYSQLPASSWORD");
-$DB_NAME   = getenv("MYSQL_DATABASE");
+$DB_NAME   = getenv("MYSQLDATABASE");
 $DB_PORT   = getenv("MYSQLPORT") ?: 3306; // default port 3306 if not set
 
 // ------------------- PDO Connection -------------------
