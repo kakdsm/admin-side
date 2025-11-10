@@ -1643,72 +1643,47 @@ canvas {
   gap: 10px; 
 }
 
+
 @media (max-width: 480px) {
-  .main-container {
-    margin-left: 20px;
-    margin-right: 20px;
+
+  .top-header {
+    align-items: flex-end; 
   }
 
-  .overview-cards .card,
-  .job-status-card,
-  .applicants-card,
-  .users-status-card {
-    padding: 20px;
+  .audit-trail-section .table-header {
+    flex-direction: column; 
+    align-items: stretch;   
+    gap: 1rem;            
   }
 
-  .card-value {
-    font-size: 2rem;
+  .audit-trail-section .button-group {
+    width: 100%;
   }
 
-  h2 {
-    font-size: 1.4rem;
+  .audit-trail-section .report-button {
+    width: 100%;
+    justify-content: center; 
   }
-
-  .user-profile .user-info {
-    display: none; 
-  }
-
-  /* Adjust logout modal for very narrow screens */
-  .logout-modal-content {
-    width: 90%;
-    padding: 1.5rem;
-  }
-
-  .logout-modal-content h2 {
-    font-size: 1.2rem;
-  }
-
+  
   .search-filter-controls {
-    flex-direction: column;
-    align-items: stretch; 
-    gap: 10px;
+    flex-direction: column; 
+    align-items: stretch;   
+    gap: 0.75rem;           
   }
 
   .search-box {
-    max-width: 100%;
+    max-width: none; 
+    width: 100%;
   }
 
-  .button-group {
-    justify-content: center; 
-  }
-
-  .pagination-button,
-  .page-number {
-    padding: 6px 10px;
-  }
-  
-  .profile-section {
+  .filters {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.75rem;          
   }
 
-  .profile-section .section-icon {
-    margin-right: 0;
-    margin-bottom: 10px;
-  }
-
-  .profile-section .section-title {
-    margin-bottom: 10px;
-    padding-top: 0;
+  .filter-select {
+    width: 100%;
   }
 }
