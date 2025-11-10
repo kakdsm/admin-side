@@ -53,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitAddAdmin'])) {
                     $mail->Port = 587;
                     $mail->SMTPAuth = true;
                     $mail->SMTPSecure = 'tls';
-                    $mail->Username = 'jftsystem@gmail.com'; 
-                    $mail->Password = 'vwhs rehv nang bxuu'; 
+                    $mail->Username = getenv('SMTP_USER'); 
+                    $mail->Password = getenv('SMTP_PASS');
 
                     $mail->setFrom('jftsystem@gmail.com', 'JOBFIT Administrator');
                     $mail->addAddress($adminEmail);
