@@ -546,7 +546,7 @@ $isMaintenanceMode = file_exists(__DIR__ . '/../../.maintenance');
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-close" id="cancelReplyModal">Cancel</button>
+                <button type="button" class="btn_reply_close" id="cancelReplyModal">Cancel</button>
                 <button type="submit" name="send_reply_email" class="save-button primary-button">Send Email</button>
             </div>
         </form>
