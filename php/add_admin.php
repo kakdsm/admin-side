@@ -50,9 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitAddAdmin'])) {
                 try {
                     $mail->isSMTP();
                     $mail->Host = 'smtp.gmail.com';
-                    $mail->Port = 587;
+                    $mail->Port = 465; 
                     $mail->SMTPAuth = true;
-                    $mail->SMTPSecure = 'tls';
+                    $mail->SMTPSecure = 'ssl'; 
                     $mail->Username = getenv('SMTP_USER'); 
                     $mail->Password = getenv('SMTP_PASS');
 
