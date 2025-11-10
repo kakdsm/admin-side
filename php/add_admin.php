@@ -51,11 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitAddAdmin'])) {
                     $mail->SMTPDebug = 2;
                     $mail->isSMTP();
                     $mail->Host = 'smtp.gmail.com';
-                    $mail->Port = 465; 
+                    $mail->Port = 587;
                     $mail->SMTPAuth = true;
-                    $mail->SMTPSecure = 'ssl'; 
-                    $mail->Username = getenv('SMTP_USER'); 
-                    $mail->Password = getenv('SMTP_PASS');
+                    $mail->SMTPSecure = 'tls';
+                    $mail->Username = 'jftsystem@gmail.com'; 
+                    $mail->Password = 'vwhs rehv nang bxuu'; 
 
                     $mail->setFrom('jftsystem@gmail.com', 'JOBFIT Administrator');
                     $mail->addAddress($adminEmail);
