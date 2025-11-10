@@ -10,15 +10,15 @@ $DB_PORT   = getenv("MYSQLPORT") ?: 3306; // default port 3306 if not set
 
 // ------------------- PDO Connection -------------------
 try {
-    $dbh = new PDO(
-        "mysql:host={$DB_SERVER};port={$DB_PORT};dbname={$DB_NAME};charset=utf8mb4",
-        $DB_USER,
-        $DB_PASS,
-        [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8mb4'"
-        ]
-    );
+  $dbh = new PDO(
+    "mysql:host={$DB_SERVER};port={$DB_PORT};dbname={$DB_NAME};charset=utf8mb4",
+    $DB_USER,
+    $DB_PASS,
+    [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    ]
+);
+
 
 } catch (PDOException $e) {
     exit("❌ PDO Connection Error: " . $e->getMessage());
