@@ -74,13 +74,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!empty($adminToDeleteEmail)) {
                     $mail = new PHPMailer(true);
                     try {
-                        $mail->isSMTP();
+                         $mail->isSMTP();
                         $mail->Host = 'smtp.gmail.com';
-                        $mail->Port = 587;
+                        $mail->Port = 465; 
                         $mail->SMTPAuth = true;
-                        $mail->SMTPSecure = 'tls';
-                        $mail->Username = 'jftsystem@gmail.com'; 
-                        $mail->Password = 'vwhs rehv nang bxuu'; 
+                        $mail->SMTPSecure = 'ssl'; 
+                        $mail->Username = getenv('SMTP_USER'); 
+                        $mail->Password = getenv('SMTP_PASS');
 
                         $mail->setFrom('jftsystem@gmail.com', 'JOBFIT Administrator');
                         $mail->addAddress($adminToDeleteEmail);
