@@ -46,23 +46,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitAddAdmin'])) {
                 $message_type = "success";
 
                 // Send email to the new admin
+                // Send email to the new admin using SendGrid SMTP
                 $mail = new PHPMailer(true);
                 try {
-                    $mail->SMTPDebug = 2;
                     $mail->isSMTP();
-                    $mail->Host = 'smtp.gmail.com';
-                    $mail->Port = 587;
+                    $mail->Host = 'smtp.sendgrid.net';
                     $mail->SMTPAuth = true;
+                    $mail->Username = 'apikey'; // DO NOT change this
+                    $mail->Password = getenv('SENDGRID_API_KEY'); // Securely loaded from Railway env
                     $mail->SMTPSecure = 'tls';
-                    $mail->Username = 'jftsystem@gmail.com'; 
-                    $mail->Password = 'vwhsrehvnangbxuu'; 
-
-                    $mail->setFrom('jftsystem@gmail.com', 'JOBFIT Administrator');
-                    $mail->addAddress($adminEmail);
-
+                    $mail->Port = 587;
+                
+                    // Sender (must be verified in SendGrid)
+                    $mail->setFrom('noreply@yourdomain.com', 'JOBFIT Administrator');
+                    $mail->addAddress($adminEmail, $adminName);
+                
+                    // Email content
                     $mail->isHTML(true);
                     $mail->Subject = 'Welcome to JOBFIT Admin Panel - Your New Account Details';
-                    $mail->Body    = "
+                    $mail->Body = "
                         <p>Dear " . htmlspecialchars($adminName) . ",</p>
                         <p>A new administrator account has been created for you on the JOBFIT Admin Panel.</p>
                         <p>Here are your login details:</p>
@@ -71,16 +73,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitAddAdmin'])) {
                             <li><strong>Password:</strong> " . htmlspecialchars($adminPassword) . "</li>
                         </ul>
                         <p>For security reasons, we recommend you change your password after your first login.</p>
-                        <p>You can access the admin panel here: <a href='http://localhost/jftsystem/backend/php/admin_login.php'>Login to Admin Panel</a></p>
-                        <p>Thank you,<br>
-                        The JOBFIT Team</p>
+                        <p>You can access the admin panel here: 
+                            <a href='https://your-production-domain.com/backend/php/admin_login.php'>
+                                Login to Admin Panel
+                            </a>
+                        </p>
+                        <p>Thank you,<br>The JOBFIT Team</p>
                     ";
+                
+                    $mail->AltBody = "Dear " . htmlspecialchars($adminName) . ",\n\n" .
+                                     "A new administrator account has been created for you on the JOBFIT Admin Panel.\n\n" .
+                                     "Email: " . htmlspecialchars($adminEmail) . "\n" .
+                                     "Password: " . htmlspecialchars($adminPassword) . "\n\n" .
+                                     "Login here: https://your-production-domain.com/backend/php/admin_login.php\n\n" .
+                                     "Thank you,\nThe JOBFIT Team";
+                
                     $mail->send();
-                    $message .= " Email sent.";
+                    $message .= " Email sent successfully via SendGrid.";
                 } catch (Exception $e) {
                     $message .= " However, the welcome email could not be sent. Mailer Error: {$mail->ErrorInfo}";
-                    $message_type = "warning"; 
+                    $message_type = "warning";
                 }
+
 
                 // --- Audit Trail Entry for Adding Admin ---
             $currentAdminEmail = $_SESSION['admin'];
