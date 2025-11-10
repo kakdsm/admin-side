@@ -1591,7 +1591,6 @@ table tbody tr:hover {
 
   .graph-card {
     padding: 1rem;
-    min-width: unset;
   }
 
   .overview-graphs {
