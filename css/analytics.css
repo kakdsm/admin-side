@@ -1578,3 +1578,44 @@ table tbody tr:hover {
     color: #9ca3af;
     display: none; 
 }
+
+
+
+
+@media (max-width: 480px) {
+
+  .top-header {
+    align-items: flex-end; 
+  }
+
+
+  .graph-card {
+    padding: 1rem;
+    min-width: unset;
+  }
+
+  .overview-graphs {
+    gap: 1rem;
+  }
+
+  .graph-header {
+    flex-direction: column;
+    align-items: flex-start; 
+    gap: 0.75rem;
+  }
+
+  .completion-rate-section .tab-buttons {
+    width: 100%; 
+  }
+
+  .completion-rate-section .tab {
+    flex: 1; 
+    text-align: center; 
+  }
+
+  #pieChart {
+    max-height: 250px;
+  }
+
+  
+}
