@@ -1642,3 +1642,73 @@ canvas {
   align-items: center;
   gap: 10px; 
 }
+
+@media (max-width: 480px) {
+  .main-container {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .overview-cards .card,
+  .job-status-card,
+  .applicants-card,
+  .users-status-card {
+    padding: 20px;
+  }
+
+  .card-value {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  .user-profile .user-info {
+    display: none; 
+  }
+
+  /* Adjust logout modal for very narrow screens */
+  .logout-modal-content {
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  .logout-modal-content h2 {
+    font-size: 1.2rem;
+  }
+
+  .search-filter-controls {
+    flex-direction: column;
+    align-items: stretch; 
+    gap: 10px;
+  }
+
+  .search-box {
+    max-width: 100%;
+  }
+
+  .button-group {
+    justify-content: center; 
+  }
+
+  .pagination-button,
+  .page-number {
+    padding: 6px 10px;
+  }
+  
+  .profile-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-section .section-icon {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .profile-section .section-title {
+    margin-bottom: 10px;
+    padding-top: 0;
+  }
+}
