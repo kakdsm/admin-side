@@ -78,6 +78,21 @@ function calculateAge(dateOfBirth) {
   return age;
 }
 
+/**
+ * Helper function to format date.
+ * @param {string} dateString - Date string (e.g., 'YYYY-MM-DD').
+ * @returns {string} Formatted date (e.g., 'Jan 1, 2023').
+ */
+function formatDate(dateString) {
+  if (!dateString || dateString === "0000-00-00") return "N/A";
+  const date = new Date(dateString + 'T00:00:00'); // Ensure it's treated as local date
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 // Global function for User Profile Dropdown Toggle
 function toggleDropdown() {
   const dropdown = document.getElementById("user-dropdown");
@@ -436,6 +451,140 @@ async function handleStatusEmailFormSubmit(e) {
     ); // Error alerts are OK
     confirmBtn.textContent = originalButtonText; // Reset button if failed
     confirmBtn.disabled = false;
+  }
+}
+
+/**
+ * Populates the applicant profile modal with data.
+ * @param {object} applicantData - The applicant's data object from the API.
+ */
+function populateApplicantModal(applicantData) {
+  console.log("Populating modal with job fit data:", applicantData);
+
+  // Get the current job role from the hidden input
+  // Note: currentViewingJobRole is globally defined in applicants.php
+  const currentJobRole =
+    document.getElementById("currentViewingJobRole")?.value || "this job";
+
+  // Personal Information
+  document.getElementById("viewUserId").value = applicantData.user_id || "N/A";
+  document.getElementById("viewFullName").value = applicantData.name || "N/A";
+
+  // Handle birthday and age
+  const birthday =
+    applicantData.birthday && applicantData.birthday !== "0000-00-00"
+      ? applicantData.birthday
+      : "Not set";
+  document.getElementById("viewDOB").value = birthday;
+
+  const age =
+    applicantData.age || (birthday !== "Not set" ? calculateAge(birthday) : "N/A");
+  document.getElementById("viewAge").value = age;
+
+  // Contact Information
+  document.getElementById("viewEmail").value = applicantData.email || "N/A";
+  document.getElementById("viewContact").value =
+    applicantData.contact || "Not set";
+
+  // Educational Background
+  document.getElementById("viewEduLvl").value =
+    applicantData.education_level || "Not set";
+  document.getElementById("viewCourse").value =
+    applicantData.course || "Not set";
+  document.getElementById("viewSchool").value =
+    applicantData.school || "Not set";
+
+  // System Information
+  const joinDate = applicantData.date_applied
+    ? formatDate(applicantData.date_applied)
+    : "N/A";
+  document.getElementById("viewSignupDate").value = joinDate;
+
+  // JOB FIT TEST SCORE Section - DYNAMIC JOB ROLE
+  const roleMatchField = document.getElementById("rolematch");
+  const rolePercentageField = document.getElementById("rolepercentage");
+
+  // RESET ALL STYLING FIRST
+  if (roleMatchField) {
+    roleMatchField.style.backgroundColor = "";
+    roleMatchField.style.borderLeft = "";
+    roleMatchField.style.color = "";
+  }
+  if (rolePercentageField) {
+    rolePercentageField.style.backgroundColor = "";
+    rolePercentageField.style.borderLeft = "";
+    rolePercentageField.style.color = "";
+  }
+
+  if (applicantData.is_match && applicantData.match_percentage > 0) {
+    // HAS MATCH - Show positive styling
+    roleMatchField.value = `${currentJobRole}`;
+    rolePercentageField.value = `${applicantData.match_percentage}% Match Score`;
+
+    // Add visual styling - YELLOW for matches
+    roleMatchField.style.backgroundColor = "#fffbeb";
+    roleMatchField.style.borderLeft = "4px solid #f59e0b";
+    rolePercentageField.style.backgroundColor = "#fffbeb";
+    rolePercentageField.style.borderLeft = "4px solid #f59e0b";
+  } else {
+    // NO MATCH - Highlight in RED
+    roleMatchField.value = `No match for ${currentJobRole}`;
+    rolePercentageField.value = "N/A";
+
+    // RED highlighting for no match
+    roleMatchField.style.backgroundColor = "#fee2e2";
+    roleMatchField.style.borderLeft = "4px solid #ef4444";
+    roleMatchField.style.color = "#dc2626";
+    rolePercentageField.style.backgroundColor = "#fee2e2";
+    rolePercentageField.style.borderLeft = "4px solid #ef4444";
+    rolePercentageField.style.color = "#dc2626";
+  }
+
+  // Update profile summary
+  document.getElementById("profileFullName").textContent =
+    applicantData.name || "N/A";
+  document.getElementById("profileEmailSummary").textContent =
+    applicantData.email || "N/A";
+
+  // Update profile status - DYNAMIC JOB ROLE
+  const profileStatus = document.getElementById("profileStatus");
+  if (applicantData.is_match && applicantData.match_percentage > 0) {
+    profileStatus.innerHTML = `<span style="color: #10b981; font-weight: bold;">
+            <i class="fas fa-star"></i> ${currentJobRole} Match: ${applicantData.match_percentage}% 
+        </span>`;
+  } else {
+    profileStatus.innerHTML = `<span style="color: #ef4444; font-weight: bold;">
+            <i class="fas fa-times-circle"></i> No match for ${currentJobRole}
+        </span>`;
+  }
+
+  // Update avatar
+  const profileAvatar = document.getElementById("profileAvatar");
+  profileAvatar.innerHTML = "";
+
+  if (applicantData.avatar) {
+    // Use base64 avatar from API response
+    const img = document.createElement("img");
+    img.src = applicantData.avatar; // This should be the full data URI
+    img.alt = "User Avatar";
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.borderRadius = "50%";
+    img.style.objectFit = "cover";
+    profileAvatar.appendChild(img);
+  } else {
+    // Fallback to initials
+    const initials = applicantData.first_name
+      ? applicantData.first_name.charAt(0).toUpperCase()
+      : "U";
+    profileAvatar.textContent = initials;
+    profileAvatar.style.backgroundColor = "#2f80ed";
+    profileAvatar.style.display = "flex";
+    profileAvatar.style.alignItems = "center";
+    profileAvatar.style.justifyContent = "center";
+    profileAvatar.style.color = "white";
+    profileAvatar.style.fontWeight = "bold";
+    profileAvatar.style.fontSize = "24px";
   }
 }
 
@@ -810,128 +959,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const viewApplicantIcon = e.target.closest(".view-applicant");
     if (viewApplicantIcon) {
       e.preventDefault();
-      const userId = viewApplicantIcon.getAttribute("data-userid");
+      e.stopImmediatePropagation(); // Stop other listeners
+
       const row = viewApplicantIcon.closest("tr");
-      const statusTag = row.querySelector(".status-tag");
-      const currentStatus = statusTag
-        ? statusTag.textContent.trim()
-        : "Pending";
+      const applicantDataJson = row.getAttribute("data-applicant-data");
 
-      if (!userId) {
-        alert("User ID not found for this applicant.");
-        return;
-      }
-
-      fetch(`fetch_user_profile.php?userid=${userId}&postid=${currentPostId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.error) {
-            console.error("Error fetching user data:", data.error);
-            alert("Could not load user profile: " + data.error);
-            return;
-          }
-
-          document.querySelectorAll(".form-field").forEach((el) => {
-            el.classList.remove("highlight-null");
-          });
-          if (nullFieldInstruction) nullFieldInstruction.style.display = "none";
-          let hasNullFields = false;
-
-          const profileAvatarDiv = document.getElementById("profileAvatar");
-          profileAvatarDiv.innerHTML = "";
-          if (data.image_base64) {
-            const img = document.createElement("img");
-            img.src = data.image_base64;
-            img.alt = "User Avatar";
-            img.classList.add("avatar-circle-large");
-            profileAvatarDiv.appendChild(img);
-          } else {
-            const initials = data.firstname ? data.firstname.charAt(0) : "";
-            profileAvatarDiv.textContent = initials.toUpperCase();
-            profileAvatarDiv.style.backgroundColor = "#2f80ed";
-          }
-
-          const profileFullNameElement =
-            document.getElementById("profileFullName");
-          const profileEmailSummaryElement = document.getElementById(
-            "profileEmailSummary"
+      if (applicantDataJson) {
+        try {
+          // Replace escaped quotes if necessary
+          const applicantData = JSON.parse(
+            applicantDataJson.replace(/&#39;/g, "'")
           );
-          const statusTagElement = document.getElementById("profileStatus");
-
-          if (profileFullNameElement)
-            profileFullNameElement.textContent = `${data.firstname || ""} ${
-              data.lastname || ""
-            }`.trim();
-          if (profileEmailSummaryElement)
-            profileEmailSummaryElement.textContent = data.email;
-
-          if (statusTagElement) {
-            const statusLower = currentStatus.toLowerCase();
-            statusTagElement.textContent = `Application Status: ${currentStatus}`;
-            statusTagElement.className = "profile-status";
-
-            // *** MODIFIED: Status display in profile modal ***
-            if (statusLower === "job offer") {
-              statusTagElement.classList.add("status-job-offer"); // Add new CSS class
-            } else if (statusLower === "failed") {
-              statusTagElement.classList.add("status-rejected");
-            } else if (statusLower === "initial interview") {
-              statusTagElement.classList.add("status-initial-interview");
-            } else if (statusLower === "technical interview") {
-              statusTagElement.classList.add("status-technical-interview"); // Add new CSS class
-            } else if (statusLower === "job offer accepted") {
-              statusTagElement.classList.add("status-job-accepted"); // Add new CSS class
-            } else if (statusLower === "job offer rejected") {
-              statusTagElement.classList.add("status-job-rejected"); // Add new CSS class
-            } else {
-              statusTagElement.classList.add("status-pending");
-            }
-          }
-
-          const calculatedAge = calculateAge(data.bday);
-          const fieldsToCheck = {
-            viewUserId: data.userid,
-            viewFullName: `${data.firstname || ""} ${
-              data.lastname || ""
-            }`.trim(),
-            viewDOB: data.bday,
-            viewAge: calculatedAge,
-            viewEmail: data.email,
-            viewContact: data.contact,
-            viewEduLvl: data.educlvl,
-            viewCourse: data.course,
-            viewSchool: data.school,
-            viewSignupDate: data.joined_date_formatted,
-            rolematch: data.rolematch || "",
-            rolepercentage: data.rolepercentage || "",
-          };
-
-          for (const [id, value] of Object.entries(fieldsToCheck)) {
-            const inputElement = document.getElementById(id);
-            if (inputElement) {
-              const displayValue = value || "N/A";
-              inputElement.value = displayValue;
-              const isMissing =
-                value === null || value === "" || value === "0000-00-00";
-              if (isMissing) {
-                const parentFormField = inputElement.closest(".form-field");
-                if (parentFormField) {
-                  parentFormField.classList.add("highlight-null");
-                  hasNullFields = true;
-                }
-              }
-            }
-          }
-
-          if (hasNullFields && nullFieldInstruction) {
-            nullFieldInstruction.style.display = "block";
-          }
+          populateApplicantModal(applicantData);
           if (viewUserProfileModal) viewUserProfileModal.style.display = "flex";
-        })
-        .catch((error) => {
-          console.error("Fetch error:", error);
-          alert("An error occurred while fetching applicant data.");
-        });
+        } catch (parseError) {
+          console.error("Error parsing applicant data:", parseError);
+          alert("Error loading applicant data.");
+        }
+      } else {
+        console.error("No applicant data found in data-applicant-data attribute.");
+        alert("Could not load applicant data. Attribute missing.");
+      }
     }
 
     // --- UPDATED: Handler for 'Job Offer' and 'Failed' ---
@@ -945,8 +993,11 @@ document.addEventListener("DOMContentLoaded", function () {
       if (dropdown) dropdown.style.display = "none";
 
       const row = linkElement.closest("tr");
-      const name = row.cells[2].textContent.trim();
-      const email = row.cells[3].textContent.trim();
+      const applicantData = JSON.parse(
+        row.getAttribute("data-applicant-data").replace(/&#39;/g, "'")
+      );
+      const name = applicantData.name;
+      const email = applicantData.email;
       const jobRole = currentViewingJobRoleInput.value;
 
       if (newStatus === "Job Offer") {
@@ -988,8 +1039,12 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Error: Application ID or table row not found.");
         return;
       }
-      const nameCell = row.querySelector("td:nth-child(3)");
-      const fullName = nameCell ? nameCell.textContent.trim() : "N/A";
+
+      const applicantData = JSON.parse(
+        row.getAttribute("data-applicant-data").replace(/&#39;/g, "'")
+      );
+      const fullName = applicantData.name;
+
       if (archiveApplicantFullNameSpan)
         archiveApplicantFullNameSpan.textContent = fullName;
       if (archiveApplicantAppIdSpan)
@@ -1174,70 +1229,184 @@ document.addEventListener("DOMContentLoaded", function () {
     handleStatusEmailFormSubmit
   ); // MODIFIED
 
-  // --- Table Search, Filter, Pagination Logic (Unchanged) ---
-  let allApplicantData = [];
-  let filteredData = [];
+  // ======================================================================
+  // 4. NEW API-DRIVEN TABLE & FILTER LOGIC
+  // ======================================================================
+
+  let allApplicantData = []; // Holds all data from the API
+  let filteredData = []; // Holds data after filtering (search, status, date)
   let currentPage = 1;
   let rowsPerPage = parseInt(applicantRowsPerPage?.value) || 5;
   const MAXPAGEBUTTONS = 5;
 
-  // *** NEW: Date range state variables ***
+  // Date range state variables
   let startDate = null;
   let endDate = null;
 
-  function collectAllApplicantData() {
-    allApplicantData = [];
-    if (!applicantTableBody) return;
-    const rows = applicantTableBody.querySelectorAll("tr");
-    rows.forEach((row) => {
-      if (row.cells.length < 8) return;
+  /**
+   * Fetches applicant data from the API and initializes the table.
+   */
+  async function loadApplicantsByJobMatch() {
+    // currentPostId is defined in a script tag in applicants.php
+    if (typeof currentPostId === "undefined") {
+      console.error("currentPostId is not defined.");
+      showErrorState("Configuration error. Post ID missing.");
+      return;
+    }
 
-      // Check for the "No Applicants Found" row
-      if (row.cells.length === 1 && row.cells[0].colSpan === 8) return;
+    try {
+      showLoadingState();
 
-      const fullName = row.cells[2].textContent.trim();
-      const email = row.cells[3].textContent.trim().toLowerCase();
-      const dateAppliedText = row.cells[4].textContent.trim();
-      const statusTag = row.cells[5].querySelector(".status-tag");
+      const response = await fetch(
+        `../api/get_applicants_by_job.php?post_id=${currentPostId}`
+      );
+      const data = await response.json();
 
-      // *** MODIFIED: Use new status values for filtering ***
-      let status = "pending";
-      if (statusTag) {
-        const tagText = statusTag.textContent.trim().toLowerCase();
-        if (tagText === "job offer") {
-          status = "job offer";
-        } else if (tagText === "failed") {
-          status = "failed";
-        } else if (tagText === "initial interview") {
-          status = "initial interview";
-        } else if (tagText === "technical interview") {
-          status = "technical interview";
-        } else if (tagText === "job offer accepted") {
-          status = "job offer accepted"; // *** MODIFIED: Match filter value ***
-        } else if (tagText === "job offer rejected") {
-          status = "job offer rejected"; // *** MODIFIED: Match filter value ***
-        } else {
-          status = "pending";
-        }
+      if (data.success) {
+        // Store API data as the source of truth
+        allApplicantData = data.applicants;
+        // Update stats
+        updateMatchStatistics(data);
+        // Initial render
+        renderApplicantTable();
+      } else {
+        console.error("Error loading applicants:", data.error);
+        showErrorState(data.error);
       }
-
-      const dateAppliedForSort = new Date(dateAppliedText); // *** RENAMED for sorting ***
-      const dateAppliedForFilter = row.dataset.date || ""; // *** NEW: for filtering ***
-
-      allApplicantData.push({
-        rowElement: row,
-        appId: row.getAttribute("data-appid"),
-        userId: row.getAttribute("data-userid"),
-        fullName: fullName,
-        email: email,
-        dateApplied: dateAppliedForSort, // *** MODIFIED: Used for sorting ***
-        dateFilterString: dateAppliedForFilter, // *** NEW: Used for filtering ***
-        status: status, // Use the normalized status
-        searchText: fullName.toLowerCase() + " " + email,
-      });
-    });
+    } catch (error) {
+      console.error("Fetch error:", error);
+      showErrorState("Failed to load applicants");
+    }
   }
 
+  /**
+   * Renders the loading spinner in the table body.
+   */
+  function showLoadingState() {
+    if (!applicantTableBody) return;
+    applicantTableBody.innerHTML = `
+        <tr>
+            <td colspan="8" style="text-align: center; padding: 40px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <div class="spinner"></div>
+                    <p>Loading applicants sorted by job fit score...</p>
+                </div>
+            </td>
+        </tr>
+    `;
+  }
+
+  /**
+   * Renders an error message in the table body.
+   * @param {string} message - The error message to display.
+   */
+  function showErrorState(message) {
+    if (!applicantTableBody) return;
+    applicantTableBody.innerHTML = `
+        <tr>
+            <td colspan="8" style="text-align: center; padding: 40px; color: #ef4444;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                <p>${message}</p>
+                <button onclick="loadApplicantsByJobMatch()" class="btn-retry" style="margin-top: 10px;">
+                    <i class="fas fa-redo"></i> Retry
+                </button>
+            </td>
+        </tr>
+    `;
+  }
+
+  /**
+   * Updates the match statistics box above the table.
+   * @param {object} data - The API response data.
+   */
+  function updateMatchStatistics(data) {
+    // Remove existing stats box to prevent duplicates
+    const existingStats = document.querySelector(".match-statistics");
+    if (existingStats) {
+      existingStats.remove();
+    }
+
+    const overviewHeader = document.querySelector(".overview-header");
+    if (overviewHeader && data.total_applicants > 0) {
+      const statsHtml = `
+            <div class="match-statistics">
+                <h4>Job Fit Analytics</h4>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span>Total Applicants:</span>
+                        <span class="stat-value">${data.total_applicants}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Matched Candidates:</span>
+                        <span class="stat-value">${data.matched_applicants}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Match Rate:</span>
+                        <span class="stat-value">${data.match_rate}%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Job Role:</span>
+                        <span class="stat-value">${data.job_name}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+      // Insert after the main header
+      const mainHeader = overviewHeader.querySelector("h2").parentElement;
+      mainHeader.insertAdjacentHTML("afterend", statsHtml);
+    }
+  }
+
+  /**
+   * Generates the HTML for the status action dropdown.
+   * @param {object} applicant - The applicant data object.
+   * @returns {string} HTML string for the dropdown content.
+   */
+  function generateStatusDropdown(applicant) {
+    const { status, application_id, name, email } = applicant;
+    const statusLower = status.toLowerCase();
+    let html = "";
+
+    const statusMap = {
+      "job offer":
+        '<span class="dropdown-item status-info-item">Marked for Job Offer, awaiting user response</span>',
+      failed:
+        '<span class="dropdown-item status-info-item">Already Marked as Failed</span>',
+      "job offer accepted":
+        '<span class="dropdown-item status-info-item">User accepted the job offer</span>',
+      "job offer rejected":
+        '<span class="dropdown-item status-info-item">User rejected the job offer</span>',
+    };
+
+    if (statusMap[statusLower]) {
+      html = statusMap[statusLower];
+    } else {
+      if (statusLower === "pending") {
+        html += `<a href="#" class="dropdown-item open-status-modal" data-appid="${application_id}" data-new-status="Initial Interview" data-name="${name}" data-email="${email}" style="color: #b45309;">
+                    Move to Initial Interview
+                </a><div class="dropdown-divider"></div>`;
+      }
+      if (statusLower === "initial interview") {
+        html += `<a href="#" class="dropdown-item open-status-modal" data-appid="${application_id}" data-new-status="Technical Interview" data-name="${name}" data-email="${email}" style="color: #2563eb;">
+                    Move to Technical Interview
+                </a><div class="dropdown-divider"></div>`;
+      }
+      if (statusLower === "technical interview") {
+        html += `<a href="#" class="dropdown-item update-applicant-status" data-appid="${application_id}" data-new-status="Job Offer" style="color: #22c55e;">
+                    Mark for Job Offer
+                </a><div class="dropdown-divider"></div>`;
+      }
+      html += `<a href="#" class="dropdown-item update-applicant-status" data-appid="${application_id}" data-new-status="Failed" style="color: #ef4444;">
+                Mark as Failed
+            </a>`;
+    }
+    return html;
+  }
+
+  /**
+   * Filters, sorts, paginates, and renders the applicant table.
+   */
   function renderApplicantTable() {
     if (
       !applicantTableBody ||
@@ -1245,22 +1414,27 @@ document.addEventListener("DOMContentLoaded", function () {
       !applicantPrevPage ||
       !applicantNextPage ||
       !applicantPageNumbers
-    )
+    ) {
+      console.error("Table or pagination controls not found.");
       return;
+    }
 
     const searchTerm = applicantSearch.value.toLowerCase().trim();
-    const statusFilter = applicantStatusFilter.value.toLowerCase(); // This now uses the DB values directly
+    const statusFilter = applicantStatusFilter.value.toLowerCase();
+    const sortOrder = applicantSortOrder.value;
 
     // 1. Filtering
-    filteredData = allApplicantData.filter((data) => {
-      const matchesSearch = data.searchText.includes(searchTerm);
+    filteredData = allApplicantData.filter((applicant) => {
+      const searchText = (applicant.name + " " + applicant.email).toLowerCase();
+      const matchesSearch = searchText.includes(searchTerm);
+
       const matchesStatus =
-        statusFilter === "all" || data.status === statusFilter;
+        statusFilter === "all" ||
+        applicant.status.toLowerCase() === statusFilter;
 
-      // --- *** NEW: DATE FILTER LOGIC *** ---
-      const rowDate = data.dateFilterString;
+      // Date Filter Logic
+      const rowDate = applicant.date_applied; // 'YYYY-MM-DD'
       let dateMatch = true;
-
       if (startDate && rowDate) {
         if (endDate) {
           // Range selected
@@ -1270,21 +1444,30 @@ document.addEventListener("DOMContentLoaded", function () {
           dateMatch = rowDate === startDate;
         }
       }
-      // --- *** END NEW LOGIC *** ---
-
-      return matchesSearch && matchesStatus && dateMatch; // *** MODIFIED: Added dateMatch ***
+      return matchesSearch && matchesStatus && dateMatch;
     });
 
     // 2. Sorting
-    const sortOrder = applicantSortOrder.value;
     filteredData.sort((a, b) => {
-      if (sortOrder === "asc") return a.fullName.localeCompare(b.fullName);
-      if (sortOrder === "desc") return b.fullName.localeCompare(a.fullName);
-      if (sortOrder === "newest")
-        return b.dateApplied.getTime() - a.dateApplied.getTime();
-      if (sortOrder === "oldest")
-        return a.dateApplied.getTime() - b.dateApplied.getTime();
-      return 0; // Default order (which is already newest from PHP)
+      switch (sortOrder) {
+        case "asc":
+          return a.name.localeCompare(b.name);
+        case "desc":
+          return b.name.localeCompare(a.name);
+        case "newest":
+          return new Date(b.date_applied) - new Date(a.date_applied);
+        case "oldest":
+          return new Date(a.date_applied) - new Date(b.date_applied);
+        case "default":
+        default:
+          // Default sort is by match_percentage (from API)
+          // We just need to maintain the original API order if "default" is selected
+          // Or, more accurately, re-apply the API's default sort
+          if (b.match_percentage !== a.match_percentage) {
+            return b.match_percentage - a.match_percentage;
+          }
+          return new Date(b.date_applied) - new Date(a.date_applied);
+      }
     });
 
     // 3. Pagination Setup
@@ -1300,17 +1483,106 @@ document.addEventListener("DOMContentLoaded", function () {
     // 4. Render Table Body
     applicantTableBody.innerHTML = "";
     if (paginatedData.length === 0) {
-      const noDataRow = document.createElement("tr");
-      const noDataCell = document.createElement("td");
-      noDataCell.colSpan = 8;
-      noDataCell.style.textAlign = "center";
-      noDataCell.textContent = "No Applicants Found Matching Your Criteria";
-      noDataRow.appendChild(noDataCell);
-      applicantTableBody.appendChild(noDataRow);
+      applicantTableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        No Applicants Found Matching Your Criteria
+                    </td>
+                </tr>
+            `;
     } else {
-      paginatedData.forEach((data) => {
-        applicantTableBody.appendChild(data.rowElement);
+      let html = "";
+      paginatedData.forEach((applicant) => {
+        const dateApplied = formatDate(applicant.date_applied);
+
+        // Status class logic
+        const statusLower = applicant.status.toLowerCase();
+        let statusClass = "status-pending";
+        let statusDisplay = "Pending";
+        const statusMap = {
+          "job offer": ["status-job-offer", "Job Offer"],
+          failed: ["status-failed", "Failed"],
+          "initial interview": [
+            "status-initial-interview",
+            "Initial Interview",
+          ],
+          "technical interview": [
+            "status-technical-interview",
+            "Technical Interview",
+          ],
+          "job offer accepted": ["status-job-accepted", "Job Offer Accepted"],
+          "job offer rejected": ["status-job-rejected", "Job Offer Rejected"],
+        };
+        if (statusMap[statusLower]) {
+          [statusClass, statusDisplay] = statusMap[statusLower];
+        }
+
+        // Match badge
+        let matchBadge = "";
+        if (applicant.is_match) {
+          matchBadge = `<span class='match-badge' title='Job Fit Score: ${applicant.match_percentage}%'><i class='fas fa-star'></i> ${applicant.match_percentage}% Match</span>`;
+        } else if (applicant.has_recommendation) {
+          matchBadge = `<span class='no-match-badge' title='No specific match for this job role'><i class='fas fa-info-circle'></i> Other Role</span>`;
+        }
+
+        // User avatar
+        let userAvatar = "";
+        if (applicant.avatar) {
+          userAvatar = `<img src="${applicant.avatar}" alt="User Avatar" class="avatar-circle-small">`;
+        } else {
+          const initials = applicant.first_name
+            ? applicant.first_name.charAt(0).toUpperCase()
+            : "U";
+          userAvatar = `<div class="avatar-circle-small" style="background-color: #2f80ed;">${initials}</div>`;
+        }
+
+        // Row class for highlighting
+        const rowClass = applicant.is_match ? "job-match-highlight" : "";
+
+        // Escape single quotes in JSON string for the data attribute
+        const applicantDataString = JSON.stringify(applicant).replace(
+          /'/g,
+          "&#39;"
+        );
+
+        html += `
+                    <tr class="${rowClass}" 
+                        data-appid="${applicant.application_id}" 
+                        data-userid="${applicant.user_id}" 
+                        data-date="${applicant.date_applied}" 
+                        data-applicant-data='${applicantDataString}'>
+                        
+                        <td>${applicant.application_id}</td>
+                        <td>${applicant.user_id}</td>
+                        <td>
+                            <div class="user-cell">
+                                ${userAvatar}
+                                ${applicant.name}
+                                ${matchBadge}
+                            </div>
+                        </td>
+                        <td>${applicant.email}</td>
+                        <td>${dateApplied}</td>
+                        <td><span class="status-tag ${statusClass}">${statusDisplay}</span></td>
+                        <td><a href="view_resume.php?appid=${applicant.application_id}" class="view-resume" title="View Resume" target="_blank"><i class="fas fa-file"></i> View</a></td>
+                        <td class="actions-cell">
+                            <i class="fas fa-eye action-icon view-applicant" title="View Applicant Details"></i>
+                            
+                            <div class="action-dropdown-wrapper">
+                                <i class="fas fa-pen-to-square action-icon status-dropdown-toggle" title="Update Application Status"></i>
+                                <div class="action-dropdown">
+                                    ${generateStatusDropdown(applicant)}
+                                </div>
+                            </div>
+                            
+                            <i class="fas fa-archive action-icon archive-applicant" data-appid="${
+                              applicant.application_id
+                            }" title="Archive Application"></i>
+                        </td>
+                    </tr>
+                `;
       });
+      applicantTableBody.innerHTML = html;
     }
 
     // 5. Update Pagination Info
@@ -1416,16 +1688,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Initialize the table data and render the initial view
-  collectAllApplicantData();
-  renderApplicantTable();
+  // Initialize the table data by fetching from API
+  loadApplicantsByJobMatch();
 
   // --- Generate Report Button ---
   document.querySelectorAll(".generateApplicantReportBtn").forEach((button) => {
     button.addEventListener("click", function () {
-      const postId = this.getAttribute("data-postid");
-      if (postId) {
-        window.open("applicantreport.php?postid=" + postId, "_blank");
+      // currentPostId is defined in applicants.php
+      if (typeof currentPostId !== "undefined" && currentPostId >= 0) {
+        window.open("applicantreport.php?postid=" + currentPostId, "_blank");
       } else {
         alert("Error: No Job Post ID found.");
       }
