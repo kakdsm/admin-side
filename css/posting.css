@@ -528,7 +528,6 @@
 
 .users-section {
     margin-top: 2rem;
-    padding: 0 2rem; 
 }
 
 .bordered-section {
@@ -784,10 +783,7 @@ table tbody tr:hover {
 
 
 @media (max-width: 768px) {
-    .users-section {
-        padding: 0 1rem;
-    }
-
+    
     .bordered-section {
         padding: 1rem 0;
     }
@@ -1348,6 +1344,22 @@ table tbody tr:hover {
         margin-bottom: 10px;
         padding-top: 0;
     }
+
+    .top-header {
+    align-items: flex-end; 
+  }
+
+  .users-section .section-header .button-group {
+        flex-direction: column;
+        gap: 10px; 
+        width: 100%; 
+        margin-top: 15px; 
+    }
+
+    .users-section .section-header .button-group button {
+        width: 100%;
+        margin: 0;
+    }
 }
 
 .action-dropdown-wrapper {
@@ -1661,3 +1673,4 @@ table tbody tr:hover {
 .content-display-box li {
     margin-bottom: 5px;
 }
+
