@@ -14,7 +14,7 @@
 
   .burger {
     display: none;
-    position: absolute;
+    position: fixed; 
     top: 1rem;
     left: 1rem;
     font-size: 1.5rem;
@@ -24,6 +24,7 @@
     z-index: 1001;
     transition: color 0.3s;
   }
+
 
   .burger.active {
     color: white;
@@ -113,19 +114,16 @@
     font-weight: bold;
   }
 
-  .content {
+   .content {
   margin-left: 240px; 
   padding-top: 60px; 
   flex: 1;
   transition: margin-left 0.3s;
-  max-height: 49rem;
   overflow-y: auto;
 }
 
 
-  section {
-    margin-bottom: 4rem;
-  }
+ 
 
   h2 {
     font-size: 1.6rem;
@@ -337,7 +335,6 @@
   
   @media (max-width: 768px) {
     .top-header {
-        flex-direction: column;
         align-items: center;
         gap: 0.5rem;
 
@@ -1325,6 +1322,14 @@ table tbody tr:hover {
         margin-bottom: 10px;
         padding-top: 0;
     }
+
+     .status-tag {
+    border-radius: 10px;
+  }
+  .top-header {
+    flex-direction: column;  
+    align-items: flex-end; 
+  }
 }
 .action-dropdown-wrapper {
     position: relative;
@@ -1485,6 +1490,9 @@ table tbody tr:hover {
         .confirm-modal-content .modal-buttons button {
             width: 100%;
             max-width: none; 
+        }
+        .status-tag {
+          border-radius: 10px;
         }
     }
 
