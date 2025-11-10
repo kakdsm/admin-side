@@ -1528,11 +1528,11 @@ document.addEventListener("DOMContentLoaded", function () {
         // User avatar
         let userAvatar = "";
         if (applicant.avatar) {
+          // Use the provided Base64/Data URI avatar
           userAvatar = `<img src="${applicant.avatar}" alt="User Avatar" class="avatar-circle-small">`;
         } else {
-          const initials = applicant.first_name
-            ? applicant.first_name.charAt(0).toUpperCase()
-            : "U";
+          // Fallback to generating initials from the full name
+          const initials = generateInitials(applicant.name);
           userAvatar = `<div class="avatar-circle-small" style="background-color: #2f80ed;">${initials}</div>`;
         }
 
