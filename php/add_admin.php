@@ -48,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitAddAdmin'])) {
                 // Send email to the new admin
                 $mail = new PHPMailer(true);
                 try {
+                    $mail->SMTPDebug = 2;
                     $mail->isSMTP();
                     $mail->Host = 'smtp.gmail.com';
                     $mail->Port = 465; 
