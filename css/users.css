@@ -694,7 +694,6 @@
 
 .users-section {
     margin-top: 2rem;
-    padding: 0 2rem; 
 }
 
 .bordered-section {
@@ -936,9 +935,7 @@ table tbody tr:hover {
 
 
 @media (max-width: 768px) {
-    .users-section {
-        padding: 0 1rem;
-    }
+    
 
     .bordered-section {
         padding: 1rem 0;
@@ -1625,6 +1622,10 @@ table tbody tr:hover {
         margin-bottom: 10px;
         padding-top: 0;
     }
+
+  .top-header {
+    align-items: flex-end; 
+  }
 }
 
 .action-dropdown-wrapper {
